@@ -296,20 +296,11 @@ void start_TIM3(void)
 
 void RECEIVE_ATTR handleInterrupt() {
 
-
-
-
-
   static unsigned int changeCount = 0;
   static unsigned long lastTime = 0;
   static unsigned int repeatCount = 0;
 
   volatile uint16_t duration = read_TIM3();
-  duration;
-
-
-  //volatile const long time = read_TIM3();
-  //const unsigned int duration = time;// - lastTime;
 
   if (duration > nSeparationLimit) {
     // A long stretch without signal level change occurred. This could
@@ -361,6 +352,13 @@ void RECEIVE_ATTR handleInterrupt() {
 #define USB_HID_KEY_S     0x16
 #define USB_HID_KEY_X     0x1B
 #define USB_HID_KEY_U     0x18
+
+
+#define KEY_RIGHT 0x4f // Keyboard Right Arrow
+#define KEY_LEFT 0x50 // Keyboard Left Arrow
+
+#define NEXT_SLIDE KEY_RIGHT
+#define PREVIOUS_SLIDE KEY_LEFT
 
 
 
@@ -436,50 +434,29 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
-
-
-
 	  if (available())
 	  {
 		  volatile unsigned long val = getReceivedValue();
 		  if (val == 13365153)
 		  {
-				HAL_Delay(2000);
-				keyboardHID.modifiers = USB_HID_MODIFIER_LEFT_GUI;
-				keyboardHID.key1 = USB_HID_KEY_X;
-				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
-				HAL_Delay(100);
-
+				HAL_Delay(10);
 				keyboardHID.modifiers = 0;
-				keyboardHID.key1 = USB_HID_KEY_U;
+				keyboardHID.key1 = NEXT_SLIDE;
 				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
-				HAL_Delay(100);
-				keyboardHID.modifiers = 0;
-				keyboardHID.key1 = 0;
-				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
-				HAL_Delay(100);
-
-				keyboardHID.modifiers = 0;
-				keyboardHID.key1 = USB_HID_KEY_U;
-				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
-				HAL_Delay(100);
-				keyboardHID.modifiers = 0;
-				keyboardHID.key1 = 0;
-				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
-				HAL_Delay(100);
-				HAL_Delay(2000);
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+				HAL_Delay(200);
 		  }
 		  if (val == 13365154)
 		  {
-			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
+				HAL_Delay(10);
+				keyboardHID.modifiers = 0;
+				keyboardHID.key1 = PREVIOUS_SLIDE;
+				USBD_HID_SendReport(&hUsbDeviceFS, &keyboardHID, sizeof(struct keyboardHID_t));
+				HAL_Delay(200);
 		  }
 	  }
 
   }
   /* USER CODE END 3 */
-
 }
 
 /**
